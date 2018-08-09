@@ -2,20 +2,20 @@
   Credit Risk Scorecards: Development and Implementation using SAS
   (c)  Mamdouh Refaat
 ********/
-/*»ñÈ¡Êı¾İ¼¯¼ÇÂ¼Êı*/
+/*è·å–æ•°æ®é›†è®°å½•æ•°*/
 %macro Get_ds_rec_num(in_ds=);
 	%local _ds _ret;
 	%let _ret=-1;
-	/*´ò¿ªÊı¾İ¼¯*/
+	/*æ‰“å¼€æ•°æ®é›†*/
 	%let _ds=%sysfunc(open(&in_ds));
 	
 	%if &_ds>0 %then %do;
-		/*»ñµÃ¼ÇÂ¼¼¯ÊôĞÔ*/
+		/*è·å¾—è®°å½•é›†å±æ€§*/
 		%let _ret=%sysfunc(ATTRN(&_ds,NLOBS ));
-		/*¹Ø±ÕÊı¾İ¼¯*/
+		/*å…³é—­æ•°æ®é›†*/
 		%let _ds=%sysfunc(close(&_ds));
 	%end;
-	/*Ö±½ÓÊä³öÖµ*/
+	/*ç›´æ¥è¾“å‡ºå€¼*/
 	&_ret
 %mend;
 
@@ -239,7 +239,7 @@ proc sql noprint;
 quit;
 /* find the location of the split on this list */
 %let BestValue=0;
-%let BestI=0;/*2017/07/07¸Ä1µ½0£¬Èô²»Âú×ãÌõ¼şÔò²»·Ö×é*/
+%let BestI=0;/*2017/07/07æ”¹1åˆ°0ï¼Œè‹¥ä¸æ»¡è¶³æ¡ä»¶åˆ™ä¸åˆ†ç»„*/
 %do i=1 %to %eval(&mb-1);
   %let value=;
   %CalcMerit(&BinDS, &i, &method, Value);
@@ -433,7 +433,7 @@ drop percent &DVVar;
 run;
 %end;
 
-/*±éÀúËùÓĞµÄ½Úµã*/
+/*éå†æ‰€æœ‰çš„èŠ‚ç‚¹*/
 %if &Channel.=2 %then %do;
 proc sql;
     create table temp_data2 as
@@ -465,7 +465,7 @@ quit;
 
 %end;
 
-/*°´ÕÕ·ÖÎ»ÊıÔ¤·Ö×é*/
+/*æŒ‰ç…§åˆ†ä½æ•°é¢„åˆ†ç»„*/
 %if &Channel.=3 %then %do;
 
 proc univariate data=&DSin.  noprint;var &IVVar.;output out=temp_a1 pctlpts=1 to 100 by 1 pctlpre=p;run;quit;
@@ -613,79 +613,21 @@ set temp_map2;
 Bin=_N_;
 run;
 
-/*proc sql;*/
-/*	create table temp_varbin as*/
-/*	select a.&IVVar.,a.&DVVar.,b.Bin as &IVVar._Bin*/
-/*	from &DSin as a*/
-/*	left join &DSVarMap as b*/
-/*	on 1=1*/
-/*	where b.ll<=a.&IVVar<b.ul*/
-/*	;*/
-/*quit;*/
-/*proc freq data=temp_varbin noprint;*/
-/*	table &IVVar._Bin*&DVVar. /missing out=temp_varbin_crosscnt;*/
-/*	table &DVVar. /missing out=temp_varbin_totcnt;*/
-/*	table &IVVar._Bin /missing out=temp_varbin_varcnt;*/
-/*run;quit; */
-/*proc sql;*/
-/*	create table temp_varbin_woe as*/
-/*	select a.&IVVar._Bin,a.&DVVar.,a.COUNT as varcnt,b.COUNT as varbincnt,c.COUNT as tarcnt*/
-/*	from temp_varbin_crosscnt as a*/
-/*	left join temp_varbin_varcnt as b*/
-/*	on a.&IVVar._Bin=b.&IVVar._Bin*/
-/*	left join temp_varbin_totcnt as c*/
-/*	on a.&DVVar.=c.&DVVar.*/
-/*	order by a.&IVVar._Bin,a.&DVVar.*/
-/*	;*/
-/*quit;*/
-/**/
-/*data &DSVarIv.;*/
-/*	set temp_varbin_woe;*/
-/*	by &IVVar._Bin &DVVar.;*/
-/*	retain iv_tmp 0;*/
-/*	if last.&IVVar._Bin then do;*/
-/*		if &DVVar.=0 then do;*/
-/*			cnt_0=varcnt;*/
-/*			cnt_1=varbincnt-cnt_0;*/
-/*			tot_0=tarcnt;*/
-/*			tot_1=resolve(%Get_ds_rec_num(in_ds=temp_varbin))-tot_0;*/
-/*			p0=cnt_0/tot_0;*/
-/*			p1=cnt_1/tot_1;*/
-/*			woe=log(p1/p0);*/
-/*			iv=iv_tmp+(p1-p0)*woe;			*/
-/*		end;*/
-/*		else if &DVVar.=1 then do;*/
-/*			cnt_1=varcnt;*/
-/*			cnt_0=varbincnt-cnt_1;*/
-/*			tot_1=tarcnt;*/
-/*			tot_0=resolve(%Get_ds_rec_num(in_ds=temp_varbin))-tot_1;*/
-/*			p0=cnt_0/tot_0;*/
-/*			p1=cnt_1/tot_1;*/
-/*			woe=log(p1/p0);*/
-/*			iv=iv_tmp+(p1-p0)*woe;			*/
-/*		end;*/
-/*		output;*/
-/*	end;*/
-/*	keep &IVVar._Bin cnt_0 cnt_1 tot_0 tot_1 woe iv;*/
-/*run;*/
-
-/* Clean the workspace */
-
-/*proc datasets nodetails library=work nolist;*/
-/* delete temp_:;*/
-/*run; quit;*/
 %mend;
 
 /*
-±äÁ¿·ÖÏä
-	Ä¿Ç°Ö»Ö§³Ö¶Ô Á¬ĞøĞÍ ±äÁ¿½øĞĞ·Ö×é
-target£ºÄ¿±ê±äÁ¿Ãû£¬Ä¿Ç°Ö»Ö§³Ö2ÖµÄ¿±ê±äÁ¿
-group_var:Ğè·Ö×é±äÁ¿Ãû 
-in_ds£ºÊı¾İ¼¯Ãû
-adj:µ±Çø¼äÖĞÎªÖ»ÓĞÒ»¸öÄ¿±ê±äÁ¿ÖµÊ±£¬¼ÆËãÕ¼±ÈµÄĞŞÕıÖ¸Êı
-min_group_num:×éÄÚ×îĞ¡¼ÇÂ¼Êı×îÉÙÕ¼±È
-DSVarMap:·Ö×éºó¸÷×éµÄÉÏÏÂÏŞ
-DSVarIv:·Ö×éºó¸÷×éµÄwoeºÍivÖµ
+å˜é‡åˆ†ç®±
+	ç›®å‰åªæ”¯æŒå¯¹ è¿ç»­å‹ å˜é‡è¿›è¡Œåˆ†ç»„
+targetï¼šç›®æ ‡å˜é‡åï¼Œç›®å‰åªæ”¯æŒ2å€¼ç›®æ ‡å˜é‡
+group_var:éœ€åˆ†ç»„å˜é‡å 
+in_dsï¼šæ•°æ®é›†å
+adj:å½“åŒºé—´ä¸­ä¸ºåªæœ‰ä¸€ä¸ªç›®æ ‡å˜é‡å€¼æ—¶ï¼Œè®¡ç®—å æ¯”çš„ä¿®æ­£æŒ‡æ•°
+min_group_num:ç»„å†…æœ€å°è®°å½•æ•°æœ€å°‘å æ¯”
+DSVarMap:åˆ†ç»„åå„ç»„çš„ä¸Šä¸‹é™
+DSVarIv:åˆ†ç»„åå„ç»„çš„woeå’Œivå€¼
+max_group:æœ€å¤§åˆ†ç»„æ•°
+method:åˆ†ç»„è¯„ä»·æ ‡å‡†ï¼ˆiv/gini/entrogyï¼‰
+m_woe:woeæ˜¯å¦å•è°ƒ
 */
 
 
@@ -814,7 +756,7 @@ run;
 /*				cal_varcnt=cal_varcnt+varcnt;*/
 /*			end;*/
 /*			else do;*/
-/*/*			  ±íÊ¾¼ÆËãÃ¿Ò»¸öÀà±ğµÄivÖµ£¬¶ø²»ÊÇ·Ö³ÉÁ½²ãÖ®ºóµÄivÖµÀÛ¼Ó£¬iv_tmpÃ»Ê²Ã´×÷ÓÃ*/*/
+/*/*			  è¡¨ç¤ºè®¡ç®—æ¯ä¸€ä¸ªç±»åˆ«çš„ivå€¼ï¼Œè€Œä¸æ˜¯åˆ†æˆä¸¤å±‚ä¹‹åçš„ivå€¼ç´¯åŠ ï¼Œiv_tmpæ²¡ä»€ä¹ˆä½œç”¨*/*/
 /**/
 /*				if last.&group_var. then do;*/
 /*					cal_varcnt=cal_varcnt+varbincnt;*/
@@ -855,9 +797,9 @@ run;
 /*/*		&group_var.=round(&group_var.,1e-10);*/*/
 /*/*		lag_group=lag(&group_var.);*/*/
 /*/*		*/*/
-/*/*		/*±£Ö¤·ÖÁÑµÄÁ½×é¼ÇÂ¼Êı¾ù´óÓÚ×ÜÊıµÄ&min_group_num.*/*/*/
+/*/*		/*ä¿è¯åˆ†è£‚çš„ä¸¤ç»„è®°å½•æ•°å‡å¤§äºæ€»æ•°çš„&min_group_num.*/*/*/
 /*/*		if _n_>&all_count.*&min_group_num. and (num_Of_split_ds-_n_+1)>=&all_count.*&min_group_num. then do;*/*/
-/*/*			/*ÁÙ½çÖµÒÔÏÂ£¨°üÀ¨ÁÙ½çÖµ£©Çø¼äµÄÊÂ¼şÕ¼±ÈºÍ·ÇÊÂ¼şÕ¼±È*/*/*/
+/*/*			/*ä¸´ç•Œå€¼ä»¥ä¸‹ï¼ˆåŒ…æ‹¬ä¸´ç•Œå€¼ï¼‰åŒºé—´çš„äº‹ä»¶å æ¯”å’Œéäº‹ä»¶å æ¯”*/*/*/
 /*/*			if target_nonevent_count=0 or target_event_count=0 then do;*/*/
 /*/*				nonevent_ratio_lower=(target_nonevent_count+&adj.)/&target_nonevent_count_all.;*/*/
 /*/*				event_ratio_lower=(target_event_count+&adj.)/&target_event_count_all.;*/*/
@@ -867,7 +809,7 @@ run;
 /*/*				event_ratio_lower=target_event_count/&target_event_count_all.;*/*/
 /*/*			end;*/*/
 /*/**/*/
-/*/*			/*ÁÙ½çÖµÒÔÉÏ£¨²»°üÀ¨°üÀ¨ÁÙ½çÖµ£©Çø¼äµÄÊÂ¼şÕ¼±ÈºÍ·ÇÊÂ¼şÕ¼±È*/*/*/
+/*/*			/*ä¸´ç•Œå€¼ä»¥ä¸Šï¼ˆä¸åŒ…æ‹¬åŒ…æ‹¬ä¸´ç•Œå€¼ï¼‰åŒºé—´çš„äº‹ä»¶å æ¯”å’Œéäº‹ä»¶å æ¯”*/*/*/
 /*/*			if target_nonevent_count=&target_nonevent_count_all. or target_event_count=&target_event_count_all then do;*/*/
 /*/*				nonevent_ratio_upper=(&target_nonevent_count_all.-target_nonevent_count+&adj.)/&target_nonevent_count_all.;*/*/
 /*/*				event_ratio_upper=(&target_event_count_all.-target_event_count+&adj.)/&target_event_count_all.;*/*/
@@ -1063,24 +1005,24 @@ run;
 				tmp_1=cnt_1;
 				cal_varcnt=varbincnt;
 			end;
-/*			µ±ÓĞ0ÓĞ1²Å½øĞĞ·Ö¸î*/
+/*			å½“æœ‰0æœ‰1æ‰è¿›è¡Œåˆ†å‰²*/
 
-			/* ·½ÏòºÍwoeµÚÒ»´ÎÇĞ¸î·½ÏòÏàÍ¬*/
+			/* æ–¹å‘å’Œwoeç¬¬ä¸€æ¬¡åˆ‡å‰²æ–¹å‘ç›¸åŒ*/
 			if tmp_0 >0 and tmp_1 >0 and _n_^=1 then do;
 				if cal_varcnt>&all_count.*&min_group_num. 
 				and (&split_ds_count.-cal_varcnt)>=&all_count.*&min_group_num. 
 				then do;
 /*------------------------------------------------------------------------------*/
-/*				¼ÆËãIVÖµ£ºSTART*/
+/*				è®¡ç®—IVå€¼ï¼šSTART*/
 /*------------------------------------------------------------------------------*/
-/*					ÁÙ½çµãÒÔÏÂ£¨²»°üÀ¨µ±Ç°µã£©µÄÊÂ¼şÕ¼±ÈºÍ·ÇÊÂ¼şÕ¼±È*/
+/*					ä¸´ç•Œç‚¹ä»¥ä¸‹ï¼ˆä¸åŒ…æ‹¬å½“å‰ç‚¹ï¼‰çš„äº‹ä»¶å æ¯”å’Œéäº‹ä»¶å æ¯”*/
 					cnt_0_lower=tmp_0;
 					cnt_1_lower=tmp_1;
 					p0_lower=cnt_0_lower/tot_0;
 					p1_lower=cnt_1_lower/tot_1;
 					woe_lower=log(p1_lower/p0_lower);
 
-/*					ÁÙ½çµãÒÔÉÏ£¨°üÀ¨µ±Ç°µã£©µÄÊÂ¼şÕ¼±ÈºÍ·ÇÊÂ¼şÕ¼±È*/
+/*					ä¸´ç•Œç‚¹ä»¥ä¸Šï¼ˆåŒ…æ‹¬å½“å‰ç‚¹ï¼‰çš„äº‹ä»¶å æ¯”å’Œéäº‹ä»¶å æ¯”*/
 					cnt_0_upper=tot_0-tmp_0;
 					cnt_1_upper=tot_1-tmp_1;
 					p0_upper=cnt_0_upper/tot_0;
@@ -1088,7 +1030,7 @@ run;
 					woe_upper=log(p1_upper/p0_upper);
 
 					iv = (p1_lower-p0_lower)*woe_lower + (p1_upper-p0_upper)*woe_upper;
-/*                    m_woe=1 ÊÇwoeË³ĞòÅÅÁĞ·ÖÏä£¬m_woe=0ÊÇ×ÔÓÉ·ÖÏä*/
+/*                    m_woe=1 æ˜¯woeé¡ºåºæ’åˆ—åˆ†ç®±ï¼Œm_woe=0æ˜¯è‡ªç”±åˆ†ç®±*/
                    %if &m_woe.=1 %then %do;
         
 					if iv>iv_max and (1000*(woe_upper-woe_lower)*%sysevalf(&woe_increase)>0 or %sysevalf(&split_ds.=tmp_sort)) then do;
@@ -1108,19 +1050,19 @@ run;
 						call symputx('woe_u',woe_upper);
 					end;
 /*------------------------------------------------------------------------------*/
-/*				¼ÆËãIVÖµ£ºEND*/
+/*				è®¡ç®—IVå€¼ï¼šEND*/
 /*------------------------------------------------------------------------------*/
 
 /*------------------------------------------------------------------------------*/
-/*				¼ÆËãGiniÖµ£ºSTART*/
+/*				è®¡ç®—Giniå€¼ï¼šSTART*/
 /*------------------------------------------------------------------------------*/
-/*					ÁÙ½çµãÒÔÏÂ£¨²»°üÀ¨µ±Ç°µã£©µÄGini*/
+/*					ä¸´ç•Œç‚¹ä»¥ä¸‹ï¼ˆä¸åŒ…æ‹¬å½“å‰ç‚¹ï¼‰çš„Gini*/
 					G_lower=1-(cnt_0_lower**2+cnt_1_lower**2)/cal_varcnt**2;
 
-/*					ÁÙ½çµãÒÔÉÏ£¨°üÀ¨µ±Ç°µã£©µÄGini*/
+/*					ä¸´ç•Œç‚¹ä»¥ä¸Šï¼ˆåŒ…æ‹¬å½“å‰ç‚¹ï¼‰çš„Gini*/
 					G_upper=1-(cnt_0_upper**2+cnt_1_upper**2)/(tot_0+tot_1-cal_varcnt)**2;
 
-/*					×ÜÌåµÄGini*/
+/*					æ€»ä½“çš„Gini*/
 					G_all=1-(tot_0**2+tot_1**2)/(tot_0+tot_1)**2;
 
 					GR = 1-(cal_varcnt*G_lower+(tot_0+tot_1-cal_varcnt)*G_upper)/((tot_0+tot_1)*G_all);
@@ -1132,21 +1074,21 @@ run;
 						call symputx('GR',GR_max);
 					end;
 /*------------------------------------------------------------------------------*/
-/*				¼ÆËãGiniÖµ£ºEND*/
+/*				è®¡ç®—Giniå€¼ï¼šEND*/
 /*------------------------------------------------------------------------------*/
 
 /*------------------------------------------------------------------------------*/
-/*				¼ÆËãEntropyÖµ£ºSTART*/
+/*				è®¡ç®—Entropyå€¼ï¼šSTART*/
 /*------------------------------------------------------------------------------*/
-/*					ÁÙ½çµãÒÔÏÂ£¨²»°üÀ¨µ±Ç°µã£©µÄEntropy*/
+/*					ä¸´ç•Œç‚¹ä»¥ä¸‹ï¼ˆä¸åŒ…æ‹¬å½“å‰ç‚¹ï¼‰çš„Entropy*/
 					E_lower=-(cnt_0_lower/cal_varcnt)*log2(cnt_0_lower/cal_varcnt)
 									-(cnt_1_lower/cal_varcnt)*log2(cnt_1_lower/cal_varcnt);
 
-/*					ÁÙ½çµãÒÔÉÏ£¨°üÀ¨µ±Ç°µã£©µÄEntropy*/
+/*					ä¸´ç•Œç‚¹ä»¥ä¸Šï¼ˆåŒ…æ‹¬å½“å‰ç‚¹ï¼‰çš„Entropy*/
 					E_upper=-(cnt_0_upper/(tot_0+tot_1-cal_varcnt))*log2(cnt_0_upper/(tot_0+tot_1-cal_varcnt))
 									-(cnt_1_upper/(tot_0+tot_1-cal_varcnt))*log2(cnt_1_upper/(tot_0+tot_1-cal_varcnt));
 
-/*					×ÜÌåµÄEntropy*/
+/*					æ€»ä½“çš„Entropy*/
 					E_all=-(tot_0/(tot_0+tot_1))*log2(tot_0/(tot_0+tot_1))
 							  -(tot_1/(tot_0+tot_1))*log2(tot_1/(tot_0+tot_1));
 
@@ -1159,7 +1101,7 @@ run;
 						call symputx('ER',ER_max);
 					end;
 /*------------------------------------------------------------------------------*/
-/*				¼ÆËãEntropyÖµ£ºEND*/
+/*				è®¡ç®—Entropyå€¼ï¼šEND*/
 /*------------------------------------------------------------------------------*/
 
 				end;
@@ -1213,7 +1155,7 @@ run;
 			%let cut_off=&max_cut_off_E;
 		%end;
 
-/*	È·¶¨woeµÚÒ»´ÎÇĞ¸îµÄ·½Ïò*/
+/*	ç¡®å®šwoeç¬¬ä¸€æ¬¡åˆ‡å‰²çš„æ–¹å‘*/
        %if %sysevalf(&split_ds.=tmp_sort) %then %do;
 	        %if %sysevalf(&woe_u. > &woe_l.) %then %do;
 			     %let woe_increase=1;
@@ -1287,10 +1229,10 @@ proc datasets lib=work nolist nodetails;
 run;quit;
 /*			%abort;*/
 
-/*¸ù¾İÁÙ½çÖµ¶ÔÊı¾İ·Ö×é,²¢¼ÆËã×îºó·Ö×éµÄWOEÖµºÍIVÖµ*/
+/*æ ¹æ®ä¸´ç•Œå€¼å¯¹æ•°æ®åˆ†ç»„,å¹¶è®¡ç®—æœ€ååˆ†ç»„çš„WOEå€¼å’ŒIVå€¼*/
 
 
-/*Ñ¡Ôñ×î´ó·Ö×éÊı£¬´ËÊ±²»ÄÜÅÅĞò£¬ÒòÎª¿¿Ç°µÄ·Ö×éivÖµÔ½¸ß*/
+/*é€‰æ‹©æœ€å¤§åˆ†ç»„æ•°ï¼Œæ­¤æ—¶ä¸èƒ½æ’åºï¼Œå› ä¸ºé å‰çš„åˆ†ç»„ivå€¼è¶Šé«˜*/
 data Group_record1;
    set Group_record;
    if _n_<=&max_group.-1;
@@ -1319,7 +1261,7 @@ run;
 	run;
 %end;
 %else %do;
-/*ÈôÊÇÃ»ÓĞ»®·Ö£¬¾ÍÖ±½ÓÓÃÔ­ÓĞµÄ·Ö×é	*/
+/*è‹¥æ˜¯æ²¡æœ‰åˆ’åˆ†ï¼Œå°±ç›´æ¥ç”¨åŸæœ‰çš„åˆ†ç»„	*/
 	proc sql;
 		create table temp_grpvar as
 		select distinct &group_var.
