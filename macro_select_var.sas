@@ -10,7 +10,7 @@
 	  new_name='name_'||left(_n_);
 	run;
 
-/*	ÖØÃüÃû±äÁ¿£¬ÒòÎªÖğ²½Ñ¡Ôñ±äÁ¿³¤¶È×î´ó20*/
+/*	é‡å‘½åå˜é‡ï¼Œå› ä¸ºé€æ­¥é€‰æ‹©å˜é‡é•¿åº¦æœ€å¤§20*/
 
     filename lg1 catalog 'work.t1.lg1.source';
 	data _null_;
@@ -113,7 +113,7 @@
 			run;
 	%end;
 
-/*    Ñ­»·½áÊø£¬»»»ØÔ­±äÁ¿*/
+/*    å¾ªç¯ç»“æŸï¼Œæ¢å›åŸå˜é‡*/
      data dt.test_model_tr;
 	       set dt.test_model_tr;
 		   %inc lg2;
@@ -130,7 +130,7 @@
 %mend;
 
 /*
-proc printto log="E:\other work\ÃÛ¹ŞÊı¾İ\ÉîÛÚ°ÛÇª½ğÈÚ(»ØËİ)\city2\model_train_log.txt" new;run;
+proc printto log="E:\other work\city2\model_train_log.txt" new;run;
 %select_var(alltab2, 50);
 proc printto;run;
 
