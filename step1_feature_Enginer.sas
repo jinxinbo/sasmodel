@@ -9,26 +9,6 @@ run;
 proc sort data=dt.target nodupkey;by application_no;run;
 
 
-
-/*葫芦明细数据*/
-
-libname xx 'E:\运营商欺诈模型\0709葫芦自造变量';
-libname xb 'E:\运营商欺诈模型\运营商数据表0703';					
-
-
-/*
-proc sql;
-   create table dt.data2_0712 as
-    select a.*,b.*,c.*,d.*,e.*
-	from dt.Data0712 a
-	left join dt.target b on compress(a.app_no)=compress(b.application_no)
-    left join xb.data_rule  c on compress(a.app_no)=compress(c.app_no)
-    left join xx.data0712 d on compress(a.app_no)=compress(d.app_no)
-    left join xx.data0712_other e on compress(a.app_no)=compress(e.m_app_no)
-;
-quit;
-*/
-
 /*以xx.data0713作为主键*/
 
 proc sql;
@@ -47,46 +27,12 @@ proc sql;
    ;
 quit;
 
-
-
-
-
-/*proc sql;*/
-/*  create table xx as*/
-/*   select * from xx.Gh_stat where app_no not in(select app_no from xb.data_rule);*/
-/*quit;*/
-
 proc sort data=dt.data2_0713 out=dt.data3_0713 nodupkey;by app_no;run;
-
-/**/
-/*data dt.data3_0713;*/
-/*   set dt.data2_0713;*/
-/*   where business_id_t3^='' or  business_id_t2^='' or business_id_t1^=''  ;*/
-/*run;*/
-
-/*卡牛有下面两个测试件*/
-app_no not in('K2018010916002164549','K2018011117002166163')
-;
 
 data dt.data3_0713;
    set dt.data3_0713;
    where app_no not in('K2018010916002164549','K2018011117002166163');
-/*   reg_dur1=input(reg_dur,8.);*/
-/*   phone_off_date1=input(phone_off_date,8.);*/
-/*   drop reg_dur phone_off_date m_app_no;*/
-/*   rename reg_dur1=reg_dur phone_off_date1=phone_off_date;*/
 run;
-
-  
-
-
-/*proc sql;*/
-/*   create table dt.data1(drop=m_app_no) as*/
-/*    select a.*,b.**/
-/*	from dt.data a*/
-/*	left join dt.data_other b on a.app_no=b.m_app_no;*/
-/* quit;*/
-
 
 data dt.data1;
    set dt.data1;
