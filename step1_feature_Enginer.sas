@@ -1,7 +1,7 @@
 option compress=yes validvarname=any;
 
-libname dt 'E:\ÔËÓªÉÌÆÛÕ©Ä£ĞÍ\ºùÂ«ÅÀ³æÍ³¼ÆÃ÷Ï¸Êı¾İ';
-x 'cd E:\ÔËÓªÉÌÆÛÕ©Ä£ĞÍ\ºùÂ«ÅÀ³æÍ³¼ÆÃ÷Ï¸Êı¾İ';
+libname dt 'E:\è¿è¥å•†æ¬ºè¯ˆæ¨¡å‹\è‘«èŠ¦çˆ¬è™«ç»Ÿè®¡æ˜ç»†æ•°æ®';
+x 'cd E:\è¿è¥å•†æ¬ºè¯ˆæ¨¡å‹\è‘«èŠ¦çˆ¬è™«ç»Ÿè®¡æ˜ç»†æ•°æ®';
 
 data dt.target;
    set dt.target1 dt.target2;
@@ -10,10 +10,10 @@ proc sort data=dt.target nodupkey;by application_no;run;
 
 
 
-/*ºùÂ«Ã÷Ï¸Êı¾İ*/
+/*è‘«èŠ¦æ˜ç»†æ•°æ®*/
 
-libname xx 'E:\ÔËÓªÉÌÆÛÕ©Ä£ĞÍ\0709ºùÂ«×ÔÔì±äÁ¿';
-libname xb 'E:\ÔËÓªÉÌÆÛÕ©Ä£ĞÍ\ÔËÓªÉÌÊı¾İ±í0703';					
+libname xx 'E:\è¿è¥å•†æ¬ºè¯ˆæ¨¡å‹\0709è‘«èŠ¦è‡ªé€ å˜é‡';
+libname xb 'E:\è¿è¥å•†æ¬ºè¯ˆæ¨¡å‹\è¿è¥å•†æ•°æ®è¡¨0703';					
 
 
 /*
@@ -29,14 +29,14 @@ proc sql;
 quit;
 */
 
-/*ÒÔxx.data0713×÷ÎªÖ÷¼ü*/
+/*ä»¥xx.data0713ä½œä¸ºä¸»é”®*/
 
 proc sql;
    create table dt.data2_0713 as
     select a.*,b.*,d.*,d1.*,e.*,f.*,g.*,h.*,h1.*
 	from xx.data0713 a 
 	left join dt.target b on compress(a.app_no)=compress(b.application_no)
-/*    left join dt.data0712  c on compress(a.app_no)=compress(c.app_no) --È±Ê§½Ï¶à£¬ÔİÊ±²»ÓÃ*/
+/*    left join dt.data0712  c on compress(a.app_no)=compress(c.app_no) --ç¼ºå¤±è¾ƒå¤šï¼Œæš‚æ—¶ä¸ç”¨*/
     left join xb.data_rule d on compress(a.app_no)=compress(d.app_no)
 	left join xb.Data_message d1 on compress(a.app_no)=compress(d1.app_no)
     left join xx.data0712_other e on compress(a.app_no)=compress(e.m_app_no)
@@ -64,7 +64,7 @@ proc sort data=dt.data2_0713 out=dt.data3_0713 nodupkey;by app_no;run;
 /*   where business_id_t3^='' or  business_id_t2^='' or business_id_t1^=''  ;*/
 /*run;*/
 
-/*¿¨Å£ÓĞÏÂÃæÁ½¸ö²âÊÔ¼ş*/
+/*å¡ç‰›æœ‰ä¸‹é¢ä¸¤ä¸ªæµ‹è¯•ä»¶*/
 app_no not in('K2018010916002164549','K2018011117002166163')
 ;
 
@@ -90,15 +90,15 @@ run;
 
 data dt.data1;
    set dt.data1;
-/*     ÕâĞ©ÊÇÍ¨»°Ïêµ¥½âÎö×Ö¶ÎÎÊÌâ*/
+/*     è¿™äº›æ˜¯é€šè¯è¯¦å•è§£æå­—æ®µé—®é¢˜*/
 	 if out_use_cnt_3m=. and in_use_cnt_3m=. then delete;
-/*  ÕâĞ©ÊÇÁªÏµÈËÇåÏ´´íÎó*/
+/*  è¿™äº›æ˜¯è”ç³»äººæ¸…æ´—é”™è¯¯*/
 if contact1_intop_x=. or contact2_intop_x=. or  is_contact_intop20=. then delete;
 run;
 
 ;
 
-/*Õâ¸ö¿Í»§½âÎö´íÎó*/
+/*è¿™ä¸ªå®¢æˆ·è§£æé”™è¯¯*/
 N2017121109002145440
 ;
 
@@ -121,7 +121,7 @@ data data_train;
 /*   app_week=week(app_date1);*/
 run;
 
-/*²»Ñ¡Ôñ°´ÔÂ·İ³éÑù*/
+/*ä¸é€‰æ‹©æŒ‰æœˆä»½æŠ½æ ·*/
 proc sort data=data_train;by target ;run;
 proc surveyselect data=data_train out=temp1(drop=SelectionProb SamplingWeight) noprint method=srs seed=100
 samprate=0.8 outall;
@@ -182,9 +182,9 @@ proc freq data=dt.data_train;table target;run;
 proc freq data=dt.data_test;;table target;run;
 
 
-%inc 'E:\python´úÂë¼°ÂÛÎÄ\ºÏÓ°\sas´úÂë\¼ì²é¿ÕÈ±Çé¿ö_macro.sas';
-%Inc 'E:\python´úÂë¼°ÂÛÎÄ\ºÏÓ°\sas´úÂë\c_5_2_Í³¼ÆÊôĞÔ·Ö²¼_macro.sas';
-%Inc 'E:\python´úÂë¼°ÂÛÎÄ\ºÏÓ°\sas´úÂë\c_5_1_Í³¼ÆÁ¬ĞøĞÍ·Ö²¼_macro.sas';
+%inc 'E:\sasä»£ç \æ£€æŸ¥ç©ºç¼ºæƒ…å†µ_macro.sas';
+%Inc 'E:\sasä»£ç \c_5_2_ç»Ÿè®¡å±æ€§åˆ†å¸ƒ_macro.sas';
+%Inc 'E:\sasä»£ç \c_5_1_ç»Ÿè®¡è¿ç»­å‹åˆ†å¸ƒ_macro.sas';
 
  %count_nullobs(inDS=dt.data_train,outDS=dt.nullobs2);
 proc sort data=dt.nullobs2;
@@ -198,7 +198,7 @@ data del_univ;
    put myvar;
  run;
 
-/* È±Ê§ÖµÌî³ä´¦Àí*/
+/* ç¼ºå¤±å€¼å¡«å……å¤„ç†*/
 if smses_cnt_1m=. Then smses_cnt_1m=0;
 if smses_cnt_2m=. Then smses_cnt_2m=0;
 if smses_cnt_3m=. Then smses_cnt_3m=0;
@@ -374,7 +374,7 @@ data cnt;
  run;
 
 
- /*--ÃûÒå±äÁ¿·ÖÏä--*/
+ /*--ç±»åˆ«å˜é‡åˆ†ç®±--*/
 
 proc contents data=dt.data_train4 out=cnt(keep=name type) noprint;run;
 filename fl catalog 'work.t1.fl.source';
@@ -394,7 +394,7 @@ data test;
 
 
 
-%inc 'E:\pos´ûĞĞÎªÆÀ·Ö¿¨\macro_·Ö×é·½·¨.sas';
+%inc 'E:\posè´·è¡Œä¸ºè¯„åˆ†å¡\macro_åˆ†ç»„æ–¹æ³•.sas';
 %calcwoe_catevar(inDS=test,outDS=test_1);
 
 /*%Bestgrouping(test_1,target,7,dt.new_fl_mapiv,dt.new_fl_woetab,0.05);*/
@@ -468,15 +468,15 @@ data dt.data_train4_lx;
 
 
 
-%inc 'E:\pos´ûĞĞÎªÆÀ·Ö¿¨\macro_·Ö×é·½·¨.sas';
-%inc 'E:\pos´ûĞĞÎªÆÀ·Ö¿¨\macro_¼ì²é·ÖÏäµÄÎÈ¶¨ĞÔ.sas';
+%inc 'E:\posè´·è¡Œä¸ºè¯„åˆ†å¡\macro_åˆ†ç»„æ–¹æ³•.sas';
+%inc 'E:\posè´·è¡Œä¸ºè¯„åˆ†å¡\macro_æ£€æŸ¥åˆ†ç®±çš„ç¨³å®šæ€§.sas';
 
 
 /*-----------------*/
 %macro select_var_bywoe;
 %do wi=0 %to 0;
  %do bi=4 %to 8;
-proc printto log=".\±äÁ¿·ÖÏä_&wi..txt" new;run;quit;
+proc printto log=".\å˜é‡åˆ†ç®±_&wi..txt" new;run;quit;
 %calWoeIV_and_apply(inDS=dt.data_train4_lx,adj_num=0.1,
                            min_grpNum=0.05,
                            outDS=dt.new_lx_woetab_&wi._&bi.,
@@ -507,7 +507,7 @@ data iv3;
    put varname;
 run;
 
-/*¼ÆËãwoeÖµµÄÌøµã*/
+/*è®¡ç®—woeå€¼çš„è·³ç‚¹*/
 
 %macro cal_woe_jump;
 %do ci=4 %to 8;
@@ -600,7 +600,7 @@ data _null_;
    put varname;
 run;
 
-/*5×é*/
+/*5ç»„*/
 phone_incalls1m_pre
 phone_incalls_6m
 phone_incalls3m_totalpre
@@ -701,13 +701,13 @@ run;
 
 
 
-/*------------------------------------·Ö½çÏß--------------------------------------------*/
+/*------------------------------------åˆ†ç•Œçº¿--------------------------------------------*/
 
 
 
 
 
-/*ºùÂ«ÔÂÕËµ¥È±Ê§ÓĞµã¶à*/
+/*è‘«èŠ¦æœˆè´¦å•ç¼ºå¤±æœ‰ç‚¹å¤š*/
 proc contents data=dt.Data0712 noprint out=cnt(keep=name type);run;
 proc contents data=xx.Gh_stat noprint out=cnt1(keep=name type);run;
 
@@ -729,7 +729,7 @@ proc sql;
 
 
 
-/*Ä£ĞÍÑéÖ¤*/
+/*æ¨¡å‹éªŒè¯*/
 
  filename xx catalog 'work.t1.t3.source';
 data _null_;	
@@ -823,7 +823,7 @@ data inmod1;
 run;
 
 
-/*Ä£ĞÍ±äÁ¿·Ö²¼ÎÈ¶¨ĞÔ·ÖÎö*/
+/*æ¨¡å‹å˜é‡åˆ†å¸ƒç¨³å®šæ€§åˆ†æ*/
 %macro wdx(intab,outtab);
 data &outtab.;
     length var $32. count percent woe 8.;
